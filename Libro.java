@@ -5,17 +5,19 @@ public class Libro{
     private boolean estadoPrestamo;
     private Integer ubicacionLibro;
     private String ISBN;
+    private Double precio;
     private String nomBiblotecario;
     private String nomUsuario;
 
     public Libro(String titulo,String autor,String editorial,boolean estadoPrestamo,
-    Integer ubicacionLibro,String ISBN,String nomBiblotecario,String nomUsuario){
+    Integer ubicacionLibro,String ISBN,Double precio,String nomBiblotecario,String nomUsuario){
         this.titulo = titulo;
         this.autor = autor;
         this.editorial = editorial;
         this.estadoPrestamo = estadoPrestamo;
         this.ubicacionLibro = ubicacionLibro;
         this.ISBN = ISBN;
+        this.precio = precio;
         this.nomBiblotecario = nomBiblotecario;
         this.nomUsuario = nomUsuario;
     }
@@ -87,6 +89,14 @@ public class Libro{
 
     public void setNomUsuario(String nomUsuario) {
         this.nomUsuario = nomUsuario;
+    }
+
+    public Double getPrecio() {
+        return precio;
+    }
+
+    public void setPrecio(Double precio) {
+        this.precio = precio;
     }
 
     
