@@ -222,7 +222,7 @@ public class main {
         String ISBN2 = sc.nextLine();
         String ISBN = sc.nextLine();
         System.out.println("Escribe el precio");
-        Double precio = Double.parseDouble(sc.nextLine());
+        Double precio = sc.nextDouble();
 
         libros.add(new Libro(titulo,autor,editorial,false,ubicacion,ISBN,precio," "," "));
 
