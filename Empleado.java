@@ -2,7 +2,7 @@ public class Empleado {
     private String nombre;
     private String DNI;
 
-    public Empleado(String nombre,String DNI){
+    public Empleado(String DNI,String nombre){
         this.nombre = nombre;
         this.DNI = DNI;
     }

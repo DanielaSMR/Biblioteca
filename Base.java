@@ -32,29 +32,6 @@ public class Base {
         Statement st = conexion.createStatement();
         conexion.setAutoCommit(false);
 
-       
-        try {
-            conexion.close();
-            conexion = null;
-        } catch (SQLException sqle) {
-            sqle.printStackTrace();
-        }
-
-        empleados = new ArrayList<>();
-        empleados.add(new Empleado("Alberto","23847X"));
-        empleados.add(new Empleado("Estela","233427X"));
-        empleados.add(new Empleado("Encarna","23847X"));
-        empleados.add(new Empleado("Agustin","23847X"));
-        empleados.add(new Empleado("Marcos","23847X"));
-
-
-        usuarios = new ArrayList<>();
-        usuarios.add(new Usuario("usu1"));
-        usuarios.add(new Usuario("usu2"));
-        usuarios.add(new Usuario("usu3"));
-        usuarios.add(new Usuario("usu4"));
-        usuarios.add(new Usuario("usu5"));
-
 
 
         String eleccion;
@@ -101,6 +78,7 @@ public class Base {
                             break;
                         case "2":
                             nuevoEmpleado(st);
+                            conexion.commit();
                             break;
                         case "3":
                             eliminarEmpleado();
@@ -125,6 +103,7 @@ public class Base {
                             break;
                         case "2":
                             nuevoUsuario();
+                            conexion.commit();
                             break;
                         case "3":
                             eliminarUsuario();
@@ -142,7 +121,12 @@ public class Base {
                     break;
             }
         }while(!eleccion.equals("10"));
+        conexion.commit();
+        conexion.close();
 
+    }
+
+    public static void buscarEmpleado(){
 
     }
 
@@ -160,22 +144,23 @@ public class Base {
         System.out.println("Cual es el DNI?");
         String DNI = sc.nextLine();
 
-        String sentenciaSql = "INSERT INTO empleados (nombre, DNI) VALUES (?, ?)" + "VALUES ('" + nombre + "','" + DNI + "');" ;
+        String sentenciaSql = "INSERT INTO empleados (dni,nombre)" + "VALUES ('" + DNI + "','" + nombre + "');" ;
         
         try {
-            ResultSet rs = st.executeQuery("SELECT DNI FROM empleados");
+            ResultSet rs = st.executeQuery("SELECT dni FROM empleados");
             int n=0;
             while (rs.next()) {
                 System.out.print("Column "+ n +" returned ");
                 System.out.println(rs.getString(1));
+                
+                if(!rs.getString(1).equals(DNI)){
+                    st.execute(sentenciaSql);
+                    System.out.println("Se añadio con exito");
+                }else
                 n++;
-                if(rs.getString(1).equals(DNI)){
-                    
-                }
             }
             rs.close();
             st.close();
-            st.execute(sentenciaSql);
           } catch (SQLException sqle) {
             sqle.printStackTrace();
           }
@@ -210,7 +195,7 @@ public class Base {
                 nombre = nombre + apellido;
             }
         }
-        empleados.add(new Empleado(nombre));
+        //empleados.add(new Empleado(nombre));
     }
 
     public static void eliminarUsuario(){
@@ -240,9 +225,10 @@ public class Base {
         System.out.println("Escribe el precio");
         Double precio = sc.nextDouble();
 
-        libros.add(new Libro(titulo,autor,editorial,false,ubicacion,ISBN,precio," "," "));
+        libros.add(new Libro(ISBN,titulo,autor,editorial,false,ubicacion,precio," "," "));
 
     }
+
     
 
     public static void buscarLibro(String eleccion){

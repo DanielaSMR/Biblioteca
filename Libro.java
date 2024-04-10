@@ -1,16 +1,16 @@
 public class Libro{
+    private String ISBN;
     private String titulo;
     private String autor;
     private String editorial;
     private boolean estadoPrestamo;
     private Integer ubicacionLibro;
-    private String ISBN;
     private Double precio;
     private String nomBiblotecario;
     private String nomUsuario;
 
-    public Libro(String titulo,String autor,String editorial,boolean estadoPrestamo,
-    Integer ubicacionLibro,String ISBN,Double precio,String nomBiblotecario,String nomUsuario){
+    public Libro(String ISBN,String titulo,String autor,String editorial,boolean estadoPrestamo,
+    Integer ubicacionLibro,Double precio,String nomBiblotecario,String nomUsuario){
         this.titulo = titulo;
         this.autor = autor;
         this.editorial = editorial;
