@@ -1,6 +1,8 @@
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
@@ -9,20 +11,42 @@ import java.io.IOException;
 import java.io.FileReader;
 import java.io.BufferedReader;
 
-public class main {
+public class Base {
     public static Scanner sc = new Scanner(System.in);
     public static List<Empleado> empleados;
     public static List<Usuario> usuarios;
     public static List<Libro> libros;
+    
     public static void main(String[] args) throws Exception {
 
+        try {
+            Class.forName("org.postgresql.Driver");
+        } catch (ClassNotFoundException ex) {
+            System.out.println("Error al registrar el driver de PostgreSQL: " + ex);
+        }
+
+        Connection conexion = null;
+        // Database connect
+        // Conectamos con la base de datos
+        conexion = DriverManager.getConnection("jdbc:postgresql://localhost:5432/mati", "mati", "mati");
+        Statement st = conexion.createStatement();
+        conexion.setAutoCommit(false);
+
+       
+        try {
+            conexion.close();
+            conexion = null;
+        } catch (SQLException sqle) {
+            sqle.printStackTrace();
+        }
 
         empleados = new ArrayList<>();
-        empleados.add(new Empleado("Alberto",""));
-        empleados.add(new Empleado("Encarna",""));
-        empleados.add(new Empleado("Estela",""));
-        empleados.add(new Empleado("Manolo",""));
-        empleados.add(new Empleado("Agustín",""));
+        empleados.add(new Empleado("Alberto","23847X"));
+        empleados.add(new Empleado("Estela","233427X"));
+        empleados.add(new Empleado("Encarna","23847X"));
+        empleados.add(new Empleado("Agustin","23847X"));
+        empleados.add(new Empleado("Marcos","23847X"));
+
 
         usuarios = new ArrayList<>();
         usuarios.add(new Usuario("usu1"));
@@ -76,7 +100,7 @@ public class main {
                             listarEmpleados();
                             break;
                         case "2":
-                            nuevoEmpleado();
+                            nuevoEmpleado(st);
                             break;
                         case "3":
                             eliminarEmpleado();
@@ -129,17 +153,32 @@ public class main {
         }
     }
 
-    public static void nuevoEmpleado(){
+    public static void nuevoEmpleado(Statement st){
+        
         System.out.println("Como se llama el nuevo empleado?");
         String nombre = sc.nextLine();
-        for(int i = 0; i < empleados.size();i++){
-            if(nombre.equals(empleados.get(i).getNombre())){
-                System.out.println("Escribe el apellido");
-                String apellido = sc.nextLine();
-                nombre = nombre + apellido;
+        System.out.println("Cual es el DNI?");
+        String DNI = sc.nextLine();
+
+        String sentenciaSql = "INSERT INTO empleados (nombre, DNI) VALUES (?, ?)" + "VALUES ('" + nombre + "','" + DNI + "');" ;
+        
+        try {
+            ResultSet rs = st.executeQuery("SELECT DNI FROM empleados");
+            int n=0;
+            while (rs.next()) {
+                System.out.print("Column "+ n +" returned ");
+                System.out.println(rs.getString(1));
+                n++;
+                if(rs.getString(1).equals(DNI)){
+                    
+                }
             }
-        }
-        empleados.add(new Empleado(nombre));
+            rs.close();
+            st.close();
+            st.execute(sentenciaSql);
+          } catch (SQLException sqle) {
+            sqle.printStackTrace();
+          }
     }
 
     public static void eliminarEmpleado(){
@@ -386,8 +425,6 @@ public class main {
         }
         System.out.println("Se han encontrado: " + contador + " resultados");
     }
-
-
     
 
 
