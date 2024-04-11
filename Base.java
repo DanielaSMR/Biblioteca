@@ -25,18 +25,17 @@ public class Base {
             System.out.println("Error al registrar el driver de PostgreSQL: " + ex);
         }
 
-        Connection conexion = null;
+        Connection connection = null;
         // Database connect
         // Conectamos con la base de datos
-        conexion = DriverManager.getConnection("jdbc:postgresql://localhost:5432/mati", "mati", "mati");
-        Statement st = conexion.createStatement();
-        conexion.setAutoCommit(false);
+        //connection = DriverManager.getConnection("jdbc:postgresql://localhost:5432/mati", "mati", "mati");
+        connection = DriverManager.getConnection("jdbc:postgresql://localhost:5432/postgres", "postgres", "a");
+        Statement st = connection.createStatement();
+        connection.setAutoCommit(false);
 
 
 
-        String eleccion;
-        String eleccionEmpleados;
-        String eleccionUsuarios;
+        int eleccion;
         do{
             System.out.println("Elige una opcion\n"+
             "1- Dar de alta un libro en el sistema:\n"+
@@ -47,126 +46,118 @@ public class Base {
             "6- Gestión de empleados/as de la biblioteca.\n"+
             "7- Gestión de usuarios/as de la biblioteca.\n"+
             "8- Salir del sistema.");
-            eleccion = sc.nextLine();
+            eleccion = sc.nextInt();
             switch (eleccion) {
-                case "1":
+                case 1:
                     nuevoLibro();
                     break;
-                case "2":
+                case 2:
                     buscarLibro("2");
                     break;
-                case "3":
+                case 3:
                     buscarLibro("3");
                     break;
-                case "4":
+                case 4:
                     
                     break;
-                case "5":
+                case 5:
                     
                     break; 
-                case "6":
-                    do{
-                    System.out.println("Que quieres hacer?\n"+
-                    "1-Listar empleados\n"+
-                    "2-Dar de alta a un nuevo empleado\n"+
-                    "3-Dar de baja a un empleado" +
-                    "4-Salir");
-                    eleccionEmpleados = sc.nextLine();
-                    switch (eleccionEmpleados) {
-                        case "1":
-                            listarEmpleados();
-                            break;
-                        case "2":
-                            nuevoEmpleado(st);
-                            conexion.commit();
-                            break;
-                        case "3":
-                            eliminarEmpleado();
-                            break;
-                        case "4":
-                            break;
-                        default:
-                            break;
-                    }
-                }while (!eleccionEmpleados.equals("4"));
-                case "7":
-                do{
-                    System.out.println("Que quieres hacer?\n"+
-                    "1-Listar usuarios\n"+
-                    "2-Dar de alta a un nuevo usaurio\n"+
-                    "3-Dar de baja a un usuario" +
-                    "4-Salir");
-                    eleccionUsuarios = sc.nextLine();
-                    switch (eleccionUsuarios) {
-                        case "1":
-                            listarUsuario();
-                            break;
-                        case "2":
-                            nuevoUsuario();
-                            conexion.commit();
-                            break;
-                        case "3":
-                            eliminarUsuario();
-                            break;
-                        case "4":
-                            break;
-                        default:
-                            break;
-                    }
-                }while (!eleccionUsuarios.equals("4"));
-                case "8":
-                    
+                case 6:
+                    buscarEmpleado(st);
+                    break;
+                case 7:
+                    buscarUsuario(st);
+                    break;
+                case 8:
+                    System.out.println("Saliendo...");
                     break;        
                 default:
                     break;
             }
-        }while(!eleccion.equals("10"));
-        conexion.commit();
-        conexion.close();
+        }while(eleccion != 8);
+        connection.commit();
+        connection.close();
 
     }
 
-    public static void buscarEmpleado(){
-
+    public static void buscarEmpleado(Statement st) throws SQLException{
+        int eleccionEmpleados;
+        do{
+            System.out.println("Que quieres hacer?\n"+
+            "1-Listar empleados\n"+
+            "2-Dar de alta a un nuevo empleado\n"+
+            "3-Dar de baja a un empleado" +
+            "4-Salir");
+            eleccionEmpleados = sc.nextInt();
+            switch (eleccionEmpleados) {
+                case 1:
+                    listarEmpleados(st);
+                    st.getConnection().commit();
+                    break;
+                case 2:
+                    nuevoEmpleado(st);
+                    st.getConnection().commit();
+                    break;
+                case 3:
+                    eliminarEmpleado(st);
+                    st.getConnection().commit();
+                    break;
+                case 4:
+                System.out.println("Volviendo al menu...");
+                    break;
+                default:
+                    break;
+            }
+        }while (eleccionEmpleados != 4);
     }
 
-    public static void listarEmpleados(){
+    public static void listarEmpleados(Statement st)throws SQLException{
         System.out.println("Estos son los empleados");
-        for(int i = 0; i < empleados.size();i++){
-            System.out.println(empleados.get(i).getNombre());
+        ResultSet rs = st.executeQuery("SELECT * FROM empleados");
+        int n=0;
+        while (rs.next()) {
+            System.out.println("Columna 1: " + rs.getString(1) + "Columna 2: " + rs.getString(2));
+            n++;
         }
+        rs.close();
+        
     }
 
     public static void nuevoEmpleado(Statement st){
         
         System.out.println("Como se llama el nuevo empleado?");
+        String nombre2 = sc.nextLine();
         String nombre = sc.nextLine();
         System.out.println("Cual es el DNI?");
         String DNI = sc.nextLine();
-
-        String sentenciaSql = "INSERT INTO empleados (dni,nombre)" + "VALUES ('" + DNI + "','" + nombre + "');" ;
         
         try {
-            ResultSet rs = st.executeQuery("SELECT dni FROM empleados");
-            int n=0;
-            while (rs.next()) {
-                System.out.print("Column "+ n +" returned ");
-                System.out.println(rs.getString(1));
-                
-                if(!rs.getString(1).equals(DNI)){
-                    st.execute(sentenciaSql);
-                    System.out.println("Se añadio con exito");
-                }else
-                n++;
+            //Comprobar si existe el empleado
+            ResultSet rs = st.executeQuery("SELECT dni FROM empleados WHERE dni = '" + DNI + "'");
+            if (rs.next()) {
+                System.out.println("El empleado ya existe en la base de datos.");
+            }else {
+                // Insertar nuevo empleado si el DNI no existe
+                String sentenciaSql = "INSERT INTO public.empleados (dni, nombre) VALUES (?, ?)";
+                PreparedStatement ps = st.getConnection().prepareStatement(sentenciaSql);
+                ps.setString(1, "'" + DNI + "'" ) ;//parametro 1 del Insert
+                ps.setString(2, "'" + nombre + "'" );//paranetro 2 del Insert
+                int filasAfectadas = ps.executeUpdate();
+                if (filasAfectadas > 0) {
+                    System.out.println("Se añadió el empleado con éxito.");
+                } else {
+                    System.out.println("No se pudo añadir el empleado.");
+                }
+                ps.close();
             }
             rs.close();
-            st.close();
           } catch (SQLException sqle) {
             sqle.printStackTrace();
           }
     }
 
-    public static void eliminarEmpleado(){
+    public static void eliminarEmpleado(Statement st){
         System.out.println("Como se llama el empleado que quieres borrar");
         String nombre = sc.nextLine();
         for(int i = 0; i < empleados.size();i++){
@@ -177,15 +168,46 @@ public class Base {
         }
     }
 
+    public static void buscarUsuario(Statement st) throws SQLException{
+        int eleccionUsuarios;
+        do{
+            System.out.println("Que quieres hacer?\n"+
+            "1-Listar usuarios\n"+
+            "2-Dar de alta a un nuevo usaurio\n"+
+            "3-Dar de baja a un usuario" +
+            "4-Salir");
+            eleccionUsuarios = sc.nextInt();
+            switch (eleccionUsuarios) {
+                case 1:
+                    listarUsuario(st);
+                    st.getConnection().commit();
+                    break;
+                case 2:
+                    nuevoUsuario(st);
+                    st.getConnection().commit();
+                    break;
+                case 3:
+                    eliminarUsuario(st);
+                    st.getConnection().commit();
+                    break;
+                case 4:
+                System.out.println("Volviendo al menu...");
+                     break;
+                default:
+                    break;
+            }
+        }while (eleccionUsuarios != 4);
+    }
 
-    public static void listarUsuario(){
+
+    public static void listarUsuario(Statement st){
         System.out.println("Estos son los empleados");
         for(int i = 0; i < usuarios.size();i++){
             System.out.println(usuarios.get(i).getNombre());
         }
     }
 
-    public static void nuevoUsuario(){
+    public static void nuevoUsuario(Statement st){
         System.out.println("Como se llama el nuevo empleado?");
         String nombre = sc.nextLine();
         for(int i = 0; i < usuarios.size();i++){
@@ -198,7 +220,7 @@ public class Base {
         //empleados.add(new Empleado(nombre));
     }
 
-    public static void eliminarUsuario(){
+    public static void eliminarUsuario(Statement st){
         System.out.println("Como se llama el empleado que quieres borrar");
         String nombre = sc.nextLine();
         for(int i = 0; i < usuarios.size();i++){
