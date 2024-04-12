@@ -28,8 +28,8 @@ public class Base {
         Connection connection = null;
         // Database connect
         // Conectamos con la base de datos
-        //connection = DriverManager.getConnection("jdbc:postgresql://localhost:5432/mati", "mati", "mati");
-        connection = DriverManager.getConnection("jdbc:postgresql://localhost:5432/postgres", "postgres", "a");
+        connection = DriverManager.getConnection("jdbc:postgresql://localhost:5432/mati", "mati", "mati");
+        //connection = DriverManager.getConnection("jdbc:postgresql://localhost:5432/postgres", "postgres", "a");
         Statement st = connection.createStatement();
         connection.setAutoCommit(false);
 
@@ -64,10 +64,10 @@ public class Base {
                     
                     break; 
                 case 6:
-                    buscarEmpleado(st);
+                    buscarEmpleado(st);//Terminao
                     break;
                 case 7:
-                    buscarUsuario(st);
+                    buscarUsuario(st);//Terminao
                     break;
                 case 8:
                     System.out.println("Saliendo...");
@@ -117,7 +117,7 @@ public class Base {
         ResultSet rs = st.executeQuery("SELECT * FROM empleados");
         int n=0;
         while (rs.next()) {
-            System.out.println("Columna 1: " + rs.getString(1) + "Columna 2: " + rs.getString(2));
+            System.out.println("Columna DNI: " + rs.getString(1) + "Columna Nombre: " + rs.getString(2));
             n++;
         }
         rs.close();
@@ -141,8 +141,8 @@ public class Base {
                 // Insertar nuevo empleado si el DNI no existe
                 String sentenciaSql = "INSERT INTO public.empleados (dni, nombre) VALUES (?, ?)";
                 PreparedStatement ps = st.getConnection().prepareStatement(sentenciaSql);
-                ps.setString(1, "'" + DNI + "'" ) ;//parametro 1 del Insert
-                ps.setString(2, "'" + nombre + "'" );//paranetro 2 del Insert
+                ps.setString(1, DNI) ;//parametro 1 del Insert
+                ps.setString(2, nombre);//paranetro 2 del Insert
                 int filasAfectadas = ps.executeUpdate();
                 if (filasAfectadas > 0) {
                     System.out.println("Se añadió el empleado con éxito.");
@@ -157,15 +157,36 @@ public class Base {
           }
     }
 
-    public static void eliminarEmpleado(Statement st){
-        System.out.println("Como se llama el empleado que quieres borrar");
-        String nombre = sc.nextLine();
-        for(int i = 0; i < empleados.size();i++){
-            if(nombre.equals(empleados.get(i).getNombre())){
-                System.out.println("Has eliminado al empleado:" + nombre);
-                empleados.remove(i);
+    public static void eliminarEmpleado(Statement st)throws SQLException{
+        System.out.println("Cual es el DNI del empleado a borrar");
+        String DNI2 = sc.nextLine();
+        String DNI = sc.nextLine();
+        String sentenciaSql = "DELETE FROM public.empleados WHERE dni = ? ;";
+        try{
+            ResultSet rs = st.executeQuery("SELECT * FROM empleados");
+            while(rs.next()){
+                //comprueba si el empleado existe
+                if(rs.getString(1).equals(DNI)){
+                    System.out.println("Eliminando al empleado: \n DNI: " + rs.getString(1) + " Nombre: " + rs.getString(2));
+                    PreparedStatement ps = st.getConnection().prepareStatement(sentenciaSql);
+                    ps.setString(1, DNI) ;//parametro del delete
+                    int filasAfectadas = ps.executeUpdate();
+                    if (filasAfectadas > 0) {
+                        System.out.println("Se elimino el empleado con éxito.");
+                    } else {
+                        System.out.println("No se pudo eliminar el empleado.");
+                    }
+                    ps.close();
+                }else{
+                    System.out.println("No se encontro el empleado");
+                }
             }
+            rs.close();
+        }catch (SQLException sqle) {
+            sqle.printStackTrace();
         }
+        
+
     }
 
     public static void buscarUsuario(Statement st) throws SQLException{
@@ -200,39 +221,80 @@ public class Base {
     }
 
 
-    public static void listarUsuario(Statement st){
-        System.out.println("Estos son los empleados");
-        for(int i = 0; i < usuarios.size();i++){
-            System.out.println(usuarios.get(i).getNombre());
+    public static void listarUsuario(Statement st) throws SQLException {
+        System.out.println("Estos son los usuarios");
+        ResultSet rs = st.executeQuery("SELECT * FROM usuarios");
+        int n=0;
+        while (rs.next()) {
+            System.out.println("Columna ID: " + rs.getInt(1) + " Columna Nombre: " + rs.getString(2));
+            n++;
         }
+        rs.close();
     }
 
-    public static void nuevoUsuario(Statement st){
-        System.out.println("Como se llama el nuevo empleado?");
+    public static void nuevoUsuario(Statement st) throws SQLException{
+        System.out.println("Como se llama el nuevo usuario?");
+        String nombre2 = sc.nextLine();
         String nombre = sc.nextLine();
-        for(int i = 0; i < usuarios.size();i++){
-            if(nombre.equals(usuarios.get(i).getNombre())){
-                System.out.println("Escribe el apellido");
-                String apellido = sc.nextLine();
-                nombre = nombre + apellido;
+        System.out.println("Cual es el ID?");
+        int id = sc.nextInt();
+        
+        try {
+            ResultSet rs = st.executeQuery("SELECT id FROM usuarios WHERE id = '" + id + "'");
+            if (rs.next()) {
+                System.out.println("El empleado ya existe en la base de datos.");
+            }else {
+                String sentenciaSql = "INSERT INTO public.usuarios (id, nombre) VALUES (?, ?)";
+                PreparedStatement ps = st.getConnection().prepareStatement(sentenciaSql);
+                ps.setInt(1, id);//parametro 1 del Insert
+                ps.setString(2, nombre);//paranetro 2 del Insert
+                int filasAfectadas = ps.executeUpdate();
+                if (filasAfectadas > 0) {
+                    System.out.println("Se añadió el usuarios con éxito.");
+                } else {
+                    System.out.println("No se pudo añadir el usuario.");
+                }
+                ps.close();
             }
-        }
-        //empleados.add(new Empleado(nombre));
+            rs.close();
+          } catch (SQLException sqle) {
+            sqle.printStackTrace();
+          }
     }
 
-    public static void eliminarUsuario(Statement st){
-        System.out.println("Como se llama el empleado que quieres borrar");
-        String nombre = sc.nextLine();
-        for(int i = 0; i < usuarios.size();i++){
-            if(nombre.equals(usuarios.get(i).getNombre())){
-                System.out.println("Has eliminado al usuarios: " + nombre);
-                usuarios.remove(i);
+    public static void eliminarUsuario(Statement st) throws SQLException{
+        System.out.println("Cual es el Id del usuario a borrar");
+        String DNI2 = sc.nextLine();
+        int id = sc.nextInt();
+        String sentenciaSql = "DELETE FROM public.usuarios WHERE id = ? ;";
+        try{
+            ResultSet rs = st.executeQuery("SELECT * FROM usuarios");
+            while(rs.next()){
+                //comprueba si el empleado existe
+                if(rs.getInt(1) == (id)){
+                    System.out.println("Eliminando al empleado: \n DNI: " + rs.getInt(1) + " Nombre: " + rs.getString(2));
+                    PreparedStatement ps = st.getConnection().prepareStatement(sentenciaSql);
+                    ps.setInt(id, id);//parametro del delete
+                    int filasAfectadas = ps.executeUpdate();
+                    if (filasAfectadas > 0) {
+                        System.out.println("Se elimino el empleado con éxito.");
+                    } else {
+                        System.out.println("No se pudo eliminar el empleado.");
+                    }
+                    ps.close();
+                }else{
+                    System.out.println("No se encontro el empleado");
+                }
             }
+            rs.close();
+        }catch (SQLException sqle) {
+            sqle.printStackTrace();
         }
+        
        
     }
 
-    public static void nuevoLibro(){
+    public static void nuevoLibro(Statement st){
         System.out.println("Añade el titulo");
         String titulo = sc.nextLine();
         System.out.println("Escribe el autor");
@@ -247,8 +309,27 @@ public class Base {
         System.out.println("Escribe el precio");
         Double precio = sc.nextDouble();
 
-        libros.add(new Libro(ISBN,titulo,autor,editorial,false,ubicacion,precio," "," "));
-
+        try {
+            ResultSet rs = st.executeQuery("SELECT isbn FROM libros WHERE isbn = '" + ISBN + "'");
+            if (rs.next()) {
+                System.out.println("El empleado ya existe en la base de datos.");
+            }else {
+                String sentenciaSql = "INSERT INTO public.libros (isbn, titulo, autor, editorial, estadoprestamo, ubicacionlibro, precio, nomemple, nomusu) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);";
+                PreparedStatement ps = st.getConnection().prepareStatement(sentenciaSql);
+                ps.setInt(1, id);//parametro 1 del Insert
+                ps.setString(2, nombre);//paranetro 2 del Insert
+                int filasAfectadas = ps.executeUpdate();
+                if (filasAfectadas > 0) {
+                    System.out.println("Se añadió el usuarios con éxito.");
+                } else {
+                    System.out.println("No se pudo añadir el usuario.");
+                }
+                ps.close();
+            }
+            rs.close();
+          } catch (SQLException sqle) {
+            sqle.printStackTrace();
+          }
     }
 
     
