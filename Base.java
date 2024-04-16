@@ -46,16 +46,16 @@ public class Base {
             "6- Gestión de empleados/as de la biblioteca.\n"+
             "7- Gestión de usuarios/as de la biblioteca.\n"+
             "8- Salir del sistema.");
-            eleccion = sc.nextInt();
+            eleccion = (int)Integer.parseInt(sc.nextLine());
             switch (eleccion) {
                 case 1:
-                    nuevoLibro();
+                    nuevoLibro(st);
                     break;
                 case 2:
-                    buscarLibro("2");
+                    buscarLibro("2",st);
                     break;
                 case 3:
-                    buscarLibro("3");
+                    buscarLibro("3",st);
                     break;
                 case 4:
                     
@@ -73,6 +73,7 @@ public class Base {
                     System.out.println("Saliendo...");
                     break;        
                 default:
+                    System.out.println("No existe esa opcion");
                     break;
             }
         }while(eleccion != 8);
@@ -296,6 +297,7 @@ public class Base {
 
     public static void nuevoLibro(Statement st){
         System.out.println("Añade el titulo");
+        String titulo2 = sc.nextLine();
         String titulo = sc.nextLine();
         System.out.println("Escribe el autor");
         String autor = sc.nextLine();
@@ -316,13 +318,21 @@ public class Base {
             }else {
                 String sentenciaSql = "INSERT INTO public.libros (isbn, titulo, autor, editorial, estadoprestamo, ubicacionlibro, precio, nomemple, nomusu) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);";
                 PreparedStatement ps = st.getConnection().prepareStatement(sentenciaSql);
-                ps.setInt(1, id);//parametro 1 del Insert
-                ps.setString(2, nombre);//paranetro 2 del Insert
+                ps.setString(1, ISBN);
+                ps.setString(2, titulo);
+                ps.setString(3, autor);
+                ps.setString(4, editorial);
+                ps.setBoolean(5, false);
+                ps.setInt(6, ubicacion);
+                ps.setDouble(7, precio);
+                ps.setString(8, null);
+                ps.setString(9, null);
                 int filasAfectadas = ps.executeUpdate();
                 if (filasAfectadas > 0) {
-                    System.out.println("Se añadió el usuarios con éxito.");
+                    System.out.println("Se añadió el libro con éxito.");
+                    st.getConnection().commit();
                 } else {
-                    System.out.println("No se pudo añadir el usuario.");
+                    System.out.println("No se pudo añadir el libro.");
                 }
                 ps.close();
             }
@@ -334,7 +344,7 @@ public class Base {
 
     
 
-    public static void buscarLibro(String eleccion){
+    public static void buscarLibro(String eleccion,Statement st) throws SQLException{
         String eleccionLibros;
         do{
             System.out.println("Como quieres buscar el libro?"+
@@ -350,28 +360,36 @@ public class Base {
             eleccionLibros = sc.nextLine();
             switch (eleccionLibros) {
                 case "1":
-                    buscarTitulo(eleccion);
+                    buscarTitulo(eleccion,st);
+                    st.getConnection().commit();
                     break;
                 case "2":
-                    buscarAutor(eleccion);
+                    buscarAutor(eleccion,st);
+                    st.getConnection().commit();
                     break;
                 case "3":
-                    buscarEditorial(eleccion);
+                    buscarEditorial(eleccion,st);
+                    st.getConnection().commit();
                     break;
                 case "4":
-                    buscarUbicacion(eleccion);
+                    buscarUbicacion(eleccion,st);
+                    st.getConnection().commit();
                     break;
                 case "5":
-                    buscarISBN(eleccion);
+                    buscarISBN(eleccion,st);
+                    st.getConnection().commit();
                     break;
                 case "6":
-                    buscarEmpleado(eleccion);
+                    buscarEmpleado(eleccion,st);
+                    st.getConnection().commit();
                     break;
                 case "7":
-                    buscarPrestado(eleccion);
+                    buscarPrestado(eleccion,st);
+                    st.getConnection().commit();
                     break;
                 case "8":
-                    buscarUsuario(eleccion);
+                    buscarUsuario(eleccion,st);
+                    st.getConnection().commit();
                     break;
                 case "9":
                     System.out.println("Volviendo al menu principal...");
@@ -384,54 +402,160 @@ public class Base {
 
 
 
-    public static void buscarTitulo(String eleccion){
+    public static void buscarTitulo(String eleccion,Statement st){
         System.out.println("Escribe el nombre del libro que buscas");
         String titulo = sc.nextLine();
         int contador = 0;
         System.out.println("Los libros con este titulo:");
-        for(int i = 0;i < libros.size();i++){
-            if(titulo.equals(libros.get(i).getTitulo())){
+        try{
+            ResultSet rs = st.executeQuery("SELECT isbn,titulo FROM public.libros WHERE titulo LIKE '%" + titulo + "%';");
+            while(rs.next()){
                 contador++;
-                System.out.println(contador + " - " + "posicion " + i + " - " + libros.get(i).getTitulo());
+                System.out.println(contador + "- ISBN: " + rs.getString(1) + " Titulo: " + rs.getString(2));
+                
             }
+            rs.close();
+        }catch (SQLException sqle) {
+            sqle.printStackTrace();
+        }
+        if(contador == 0){
+            System.out.println("No se encontro ninguna coincidencia");
         }
         System.out.println("Se han encontrado: " + contador + " resultados");
+
         if(eleccion.equals("3")){
-            System.out.println("Que libro quieres borrar?");
-            int posicion = sc.nextInt();
-            libros.remove(posicion);
+            System.out.println("Cual es el titulo del libro quieres borrar?");
+            titulo = sc.nextLine();
+            String sentenciaSql = "DELETE FROM public.libros WHERE titulo = ? ;";
+            try{
+                ResultSet rs = st.executeQuery("SELECT * FROM libros");
+                while(rs.next()){
+                    if(rs.getString(2).equals(titulo)){
+                        System.out.println("Eliminando el libro: \n ISBN: " + rs.getString(1) + " Titulo: " + rs.getString(2));
+                        PreparedStatement ps = st.getConnection().prepareStatement(sentenciaSql);
+                        ps.setString(1, titulo);//parametro del delete
+                        int filasAfectadas = ps.executeUpdate();
+                        if (filasAfectadas > 0) {
+                            System.out.println("Se elimino el libro con éxito.");
+                        } else {
+                            System.out.println("No se pudo eliminar el libro.");
+                        }
+                        ps.close();
+                    }else{
+                        System.out.println("No se encontro el libro");
+                    }
+                }
+                rs.close();
+            }catch (SQLException sqle) {
+                sqle.printStackTrace();
+            }
+            
         }
     }
 
-    public static void buscarAutor(String eleccion){
+    public static void buscarAutor(String eleccion,Statement st){
         System.out.println("Escribe el nombre del autor que buscas");
         String autor = sc.nextLine();
         int contador = 0;
         System.out.println("Los libros con este autor:");
-        for(int i = 0;i < libros.size();i++){
-            if(autor.equals(libros.get(i).getAutor())){
-                contador++;
-                System.out.println(contador + "-" + libros.get(i).getTitulo());
+        try{
+            ResultSet rs = st.executeQuery("SELECT isbn,titulo,autor FROM libros WHERE autor LIKE %" + autor + "%");
+            while(rs.next()){
+                if(rs.getString(3).equals(autor)){
+                    System.out.println(contador + "- ISBN: " + rs.getString(1) + " Titulo: " + rs.getString(2) + " Autor: " + rs.getString(3));
+                    contador++;
+                }else{
+                    System.out.println("No se encontro ninguna coincidencia");
+                }
             }
+            rs.close();
+        }catch (SQLException sqle) {
+            sqle.printStackTrace();
         }
         System.out.println("Se han encontrado: " + contador + " resultados");
+
+        if(eleccion.equals("3")){
+            System.out.println("Cual es el titulo del libro quieres borrar?");
+            String titulo = sc.nextLine();
+            String sentenciaSql = "DELETE FROM public.libros WHERE titulo = ? ;";
+            try{
+                ResultSet rs = st.executeQuery("SELECT * FROM libros");
+                while(rs.next()){
+                    if(rs.getString(2).equals(titulo)){
+                        System.out.println("Eliminando el libro: \n ISBN: " + rs.getString(1) + " Titulo: " + rs.getString(2));
+                        PreparedStatement ps = st.getConnection().prepareStatement(sentenciaSql);
+                        ps.setString(1, titulo);//parametro del delete
+                        int filasAfectadas = ps.executeUpdate();
+                        if (filasAfectadas > 0) {
+                            System.out.println("Se elimino el libro con éxito.");
+                        } else {
+                            System.out.println("No se pudo eliminar el libro.");
+                        }
+                        ps.close();
+                    }else{
+                        System.out.println("No se encontro el libro");
+                    }
+                }
+                rs.close();
+            }catch (SQLException sqle) {
+                sqle.printStackTrace();
+            }
+            
+        }
     }
 
-    public static void buscarEditorial(String eleccion){
+    public static void buscarEditorial(String eleccion,Statement st){
         System.out.println("Escribe el nombre de la editorial que buscas");
         String editorial = sc.nextLine();
         int contador = 0;
         System.out.println("Los libros con esta editorial:");
-        for(int i = 0;i < libros.size();i++){
-            if(editorial.equals(libros.get(i).getEditorial())){
-                contador++;
-                System.out.println(contador + "-" + libros.get(i).getTitulo());
+        try{
+            ResultSet rs = st.executeQuery("SELECT isb,titulo,editorial FROM public.libros WHERE editorial LIKE %" + editorial + "%");
+            while(rs.next()){
+                if(rs.getString(3).equals(editorial)){
+                    System.out.println(contador + "- ISBN: " + rs.getString(1) + " Titulo: " + rs.getString(2) + " Editorial: " + rs.getString(3));
+                    contador++;
+                }else{
+                    System.out.println("No se encontro ninguna coincidencia");
+                }
             }
+            rs.close();
+        }catch (SQLException sqle) {
+            sqle.printStackTrace();
         }
         System.out.println("Se han encontrado: " + contador + " resultados");
+
+        if(eleccion.equals("3")){
+            System.out.println("Cual es el titulo del libro quieres borrar?");
+            String titulo = sc.nextLine();
+            String sentenciaSql = "DELETE FROM public.libros WHERE titulo = ? ;";
+            try{
+                ResultSet rs = st.executeQuery("SELECT * FROM libros");
+                while(rs.next()){
+                    if(rs.getString(2).equals(titulo)){
+                        System.out.println("Eliminando el libro: \n ISBN: " + rs.getString(1) + " Titulo: " + rs.getString(2));
+                        PreparedStatement ps = st.getConnection().prepareStatement(sentenciaSql);
+                        ps.setString(1, titulo);//parametro del delete
+                        int filasAfectadas = ps.executeUpdate();
+                        if (filasAfectadas > 0) {
+                            System.out.println("Se elimino el libro con éxito.");
+                        } else {
+                            System.out.println("No se pudo eliminar el libro.");
+                        }
+                        ps.close();
+                    }else{
+                        System.out.println("No se encontro el libro");
+                    }
+                }
+                rs.close();
+            }catch (SQLException sqle) {
+                sqle.printStackTrace();
+            }
+            
+        }
     }
 
-    public static void buscarUbicacion(String eleccion){
+    public static void buscarUbicacion(String eleccion,Statement st){
         System.out.println("Escribe el nombre de la ubicacion que buscas");
         int ubicacion = sc.nextInt();
         int contador = 0;
@@ -445,7 +569,7 @@ public class Base {
         System.out.println("Se han encontrado: " + contador + " resultados");
     }
 
-    public static void buscarISBN(String eleccion){
+    public static void buscarISBN(String eleccion,Statement st){
         System.out.println("Escribe el nombre de la ubicacion que buscas");
         int ubicacion = sc.nextInt();
         int contador = 0;
@@ -460,7 +584,7 @@ public class Base {
     }
 
 
-    public static void buscarEmpleado(String eleccion){
+    public static void buscarEmpleado(String eleccion,Statement st){
         System.out.println("Escribe el nombre del empleado que buscas");
         String empleado = sc.nextLine();
         int contador = 0; 
@@ -475,7 +599,7 @@ public class Base {
     }
 
 
-    public static void buscarPrestado(String eleccion){
+    public static void buscarPrestado(String eleccion,Statement st){
         System.out.println("Esta prestado el libro? 1-SI 2-NO");
         String prestamo = sc.nextLine();
         int contador = 0 ;
@@ -501,7 +625,7 @@ public class Base {
     }
 
 
-    public static void buscarUsuario(String eleccion){
+    public static void buscarUsuario(String eleccion,Statement st){
         System.out.println("Escribe el nombre del usuario que buscas");
         String usuario = sc.nextLine();
         int contador = 0 ;

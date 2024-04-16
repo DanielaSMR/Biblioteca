@@ -1,7 +1,7 @@
 public class Libro{
     private String ISBN;
     private String titulo;
-    private String autor;
+    private String autor = "anonimo";
     private String editorial;
     private boolean estadoPrestamo;
     private Integer ubicacionLibro;
