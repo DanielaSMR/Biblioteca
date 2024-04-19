@@ -459,19 +459,17 @@ public class Base {
         int contador = 0;
         System.out.println("Los libros con este autor:");
         try{
-            ResultSet rs = st.executeQuery("SELECT isbn,titulo,autor FROM libros WHERE autor LIKE %" + autor + "%");
+            ResultSet rs = st.executeQuery("SELECT isbn,titulo,autor FROM libros WHERE autor LIKE %" + autor + "%;");
             while(rs.next()){
-                if(rs.getString(3).equals(autor)){
+               
                     System.out.println(contador + "- ISBN: " + rs.getString(1) + " Titulo: " + rs.getString(2) + " Autor: " + rs.getString(3));
                     contador++;
-                }else{
-                    System.out.println("No se encontro ninguna coincidencia");
-                }
             }
             rs.close();
         }catch (SQLException sqle) {
             sqle.printStackTrace();
         }
+        System.out.println("No se encontro ninguna coincidencia");
         System.out.println("Se han encontrado: " + contador + " resultados");
 
         if(eleccion.equals("3")){
@@ -510,19 +508,16 @@ public class Base {
         int contador = 0;
         System.out.println("Los libros con esta editorial:");
         try{
-            ResultSet rs = st.executeQuery("SELECT isb,titulo,editorial FROM public.libros WHERE editorial LIKE %" + editorial + "%");
+            ResultSet rs = st.executeQuery("SELECT isbn,titulo,editorial FROM public.libros WHERE editorial LIKE %" + editorial + "%;");
             while(rs.next()){
-                if(rs.getString(3).equals(editorial)){
-                    System.out.println(contador + "- ISBN: " + rs.getString(1) + " Titulo: " + rs.getString(2) + " Editorial: " + rs.getString(3));
+                    System.out.println(contador + "- ISBN: " + rs.getString(1) + " Titulo: " + rs.getString(2) + " Editorial: " + rs.getString(4));
                     contador++;
-                }else{
-                    System.out.println("No se encontro ninguna coincidencia");
-                }
             }
             rs.close();
         }catch (SQLException sqle) {
             sqle.printStackTrace();
         }
+        System.out.println("No se encontro ninguna coincidencia");
         System.out.println("Se han encontrado: " + contador + " resultados");
 
         if(eleccion.equals("3")){
@@ -559,69 +554,200 @@ public class Base {
         System.out.println("Escribe el nombre de la ubicacion que buscas");
         int ubicacion = sc.nextInt();
         int contador = 0;
-        System.out.println("Los libros con esta ubicacion:");
-        for(int i = 0;i < libros.size();i++){
-            if(ubicacion == libros.get(i).getUbicacionLibro()){
-                contador++;
-                System.out.println(contador + "-" + libros.get(i).getTitulo());
+        System.out.println("Los libros con esta editorial:");
+        try{
+            ResultSet rs = st.executeQuery("SELECT isbn,titulo,ubicacion FROM public.libros WHERE ubicacion = " + ubicacion + ";");
+            while(rs.next()){
+                    System.out.println(contador + "- ISBN: " + rs.getString(1) + " Titulo: " + rs.getString(2) + " Ubicacion: " + rs.getString(6));
+                    contador++;
             }
+            rs.close();
+        }catch (SQLException sqle) {
+            sqle.printStackTrace();
         }
+        System.out.println("No se encontro ninguna coincidencia");
         System.out.println("Se han encontrado: " + contador + " resultados");
+
+        if(eleccion.equals("3")){
+            System.out.println("Cual es el titulo del libro quieres borrar?");
+            String titulo = sc.nextLine();
+            String sentenciaSql = "DELETE FROM public.libros WHERE titulo = ? ;";
+            try{
+                ResultSet rs = st.executeQuery("SELECT * FROM libros");
+                while(rs.next()){
+                    if(rs.getString(2).equals(titulo)){
+                        System.out.println("Eliminando el libro: \n ISBN: " + rs.getString(1) + " Titulo: " + rs.getString(2));
+                        PreparedStatement ps = st.getConnection().prepareStatement(sentenciaSql);
+                        ps.setString(1, titulo);//parametro del delete
+                        int filasAfectadas = ps.executeUpdate();
+                        if (filasAfectadas > 0) {
+                            System.out.println("Se elimino el libro con éxito.");
+                        } else {
+                            System.out.println("No se pudo eliminar el libro.");
+                        }
+                        ps.close();
+                    }else{
+                        System.out.println("No se encontro el libro");
+                    }
+                }
+                rs.close();
+            }catch (SQLException sqle) {
+                sqle.printStackTrace();
+            }
+            
+        }
     }
 
     public static void buscarISBN(String eleccion,Statement st){
-        System.out.println("Escribe el nombre de la ubicacion que buscas");
-        int ubicacion = sc.nextInt();
+        System.out.println("Escribe el nombre del isbn que buscas");
+        String isbn = sc.nextLine();
         int contador = 0;
-        System.out.println("Los libros con esta ubicacion:");
-        for(int i = 0;i < libros.size();i++){
-            if(ubicacion == libros.get(i).getUbicacionLibro()){
-                contador++;
-                System.out.println(contador + "-" + libros.get(i).getTitulo());
+        System.out.println("Los libros con este isbn:");
+        try{
+            ResultSet rs = st.executeQuery("SELECT isbn,titulo FROM public.libros WHERE isbn = '" + isbn + "';");
+            while(rs.next()){
+                    System.out.println(contador + "- ISBN: " + rs.getString(1) + " Titulo: " + rs.getString(2));
+                    contador++;
             }
+            rs.close();
+        }catch (SQLException sqle) {
+            sqle.printStackTrace();
         }
+        System.out.println("No se encontro ninguna coincidencia");
         System.out.println("Se han encontrado: " + contador + " resultados");
-    }
 
+        if(eleccion.equals("3")){
+            System.out.println("Cual es el titulo del libro quieres borrar?");
+            String titulo = sc.nextLine();
+            String sentenciaSql = "DELETE FROM public.libros WHERE titulo = ? ;";
+            try{
+                ResultSet rs = st.executeQuery("SELECT * FROM libros");
+                while(rs.next()){
+                    if(rs.getString(2).equals(titulo)){
+                        System.out.println("Eliminando el libro: \n ISBN: " + rs.getString(1) + " Titulo: " + rs.getString(2));
+                        PreparedStatement ps = st.getConnection().prepareStatement(sentenciaSql);
+                        ps.setString(1, titulo);//parametro del delete
+                        int filasAfectadas = ps.executeUpdate();
+                        if (filasAfectadas > 0) {
+                            System.out.println("Se elimino el libro con éxito.");
+                        } else {
+                            System.out.println("No se pudo eliminar el libro.");
+                        }
+                        ps.close();
+                    }else{
+                        System.out.println("No se encontro el libro");
+                    }
+                }
+                rs.close();
+            }catch (SQLException sqle) {
+                sqle.printStackTrace();
+            }
+            
+        }
+    }
 
     public static void buscarEmpleado(String eleccion,Statement st){
         System.out.println("Escribe el nombre del empleado que buscas");
-        String empleado = sc.nextLine();
-        int contador = 0; 
-        System.out.println("Los libros que el empleado presto:");
-        for(int i = 0;i < libros.size();i++){
-            if(empleado.equals(libros.get(i).getNomBiblotecario())){
-                contador++;
-                System.out.println(contador + "-" + libros.get(i).getTitulo());
+        String emple = sc.nextLine();
+        int contador = 0;
+        System.out.println("Los libros con esta empleado:");
+        try{
+            ResultSet rs = st.executeQuery("SELECT isbn,titulo,nomemple FROM public.libros WHERE nomemple = '" + emple + "';");
+            while(rs.next()){
+                    System.out.println(contador + "- ISBN: " + rs.getString(1) + " Titulo: " + rs.getString(2) + " Empleado: " + rs.getString(8));
+                    contador++;
             }
+            rs.close();
+        }catch (SQLException sqle) {
+            sqle.printStackTrace();
         }
+        System.out.println("No se encontro ninguna coincidencia");//CORREGIR
         System.out.println("Se han encontrado: " + contador + " resultados");
+
+        if(eleccion.equals("3")){
+            System.out.println("Cual es el titulo del libro quieres borrar?");
+            String titulo = sc.nextLine();
+            String sentenciaSql = "DELETE FROM public.libros WHERE titulo = ? ;";
+            try{
+                ResultSet rs = st.executeQuery("SELECT * FROM libros");
+                while(rs.next()){
+                    if(rs.getString(2).equals(titulo)){
+                        System.out.println("Eliminando el libro: \n ISBN: " + rs.getString(1) + " Titulo: " + rs.getString(2));
+                        PreparedStatement ps = st.getConnection().prepareStatement(sentenciaSql);
+                        ps.setString(1, titulo);//parametro del delete
+                        int filasAfectadas = ps.executeUpdate();
+                        if (filasAfectadas > 0) {
+                            System.out.println("Se elimino el libro con éxito.");
+                        } else {
+                            System.out.println("No se pudo eliminar el libro.");
+                        }
+                        ps.close();
+                    }else{
+                        System.out.println("No se encontro el libro");
+                    }
+                }
+                rs.close();
+            }catch (SQLException sqle) {
+                sqle.printStackTrace();
+            }
+            
+        }
     }
 
 
     public static void buscarPrestado(String eleccion,Statement st){
         System.out.println("Esta prestado el libro? 1-SI 2-NO");
-        String prestamo = sc.nextLine();
-        int contador = 0 ;
-        if(prestamo.equals("SI")){
-            System.out.println("Estos son los libros prestados:");
-            for(int i = 0;i < libros.size();i++){
-                if(libros.get(i).isEstadoPrestamo() == true){
+        String prestado = sc.nextLine();
+        Boolean prestamo;
+        if(prestado.equals("SI")){
+            prestamo = true;
+        }else{
+            prestamo = false;
+        
+
+        int contador = 0;
+        System.out.println("Los libros que estan prestados:");
+        try{
+            ResultSet rs = st.executeQuery("SELECT isbn,titulo,estadoprestamo FROM public.libros WHERE estadoprestamo = " + prestamo + ";" );
+            while(rs.next()){
+                    System.out.println(contador + "- ISBN: " + rs.getString(1) + " Titulo: " + rs.getString(2) + " Estado Prestamo: " + rs.getString(4));
                     contador++;
-                    System.out.println(contador + "-" + libros.get(i).getTitulo());
-                }
             }
-        }else if(prestamo.equals("NO")){
-            System.out.println("Estos son los libros no prestados:");
-            for(int i = 0;i < libros.size();i++){
-                if(libros.get(i).isEstadoPrestamo() == false){
-                    contador++;
-                    System.out.println(contador + "-" + libros.get(i).getTitulo());
-                }
-            }
+            rs.close();
+        }catch (SQLException sqle) {
+            sqle.printStackTrace();
         }
-    
+        System.out.println("No se encontro ninguna coincidencia");//CORREGIR
         System.out.println("Se han encontrado: " + contador + " resultados");
+
+        if(eleccion.equals("3")){
+            System.out.println("Cual es el titulo del libro quieres borrar?");
+            String titulo = sc.nextLine();
+            String sentenciaSql = "DELETE FROM public.libros WHERE titulo = ? ;";
+            try{
+                ResultSet rs = st.executeQuery("SELECT * FROM libros");
+                while(rs.next()){
+                    if(rs.getString(2).equals(titulo)){
+                        System.out.println("Eliminando el libro: \n ISBN: " + rs.getString(1) + " Titulo: " + rs.getString(2));
+                        PreparedStatement ps = st.getConnection().prepareStatement(sentenciaSql);
+                        ps.setString(1, titulo);//parametro del delete
+                        int filasAfectadas = ps.executeUpdate();
+                        if (filasAfectadas > 0) {
+                            System.out.println("Se elimino el libro con éxito.");
+                        } else {
+                            System.out.println("No se pudo eliminar el libro.");
+                        }
+                        ps.close();
+                    }else{
+                        System.out.println("No se encontro el libro");
+                    }
+                }
+                rs.close();
+            }catch (SQLException sqle) {
+                sqle.printStackTrace();
+            }
+            
+        }
     }
 
 
