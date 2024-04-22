@@ -58,7 +58,7 @@ public class Base {
                     buscarLibro("3",st);
                     break;
                 case 4:
-                    
+                    alquilarLibro(st);
                     break;
                 case 5:
                     
@@ -81,6 +81,29 @@ public class Base {
         connection.close();
 
     }
+
+
+    private static void alquilarLibro(Statement st) {
+        System.out.println("Estos son los libros NO alquilados:");
+        int contador = 1;
+        try{
+            ResultSet rs = st.executeQuery("SELECT isbn,titulo,estadoprestamo FROM public.libros WHERE estadoprestamo = false ;" );
+            while(rs.next()){
+                    System.out.println(contador + "- ISBN: " + rs.getString(1) + " Titulo: " + rs.getString(2) + " Estado Prestamo: " + rs.getString(4));
+                    contador++;
+            }
+            rs.close();
+        }catch (SQLException sqle) {
+            sqle.printStackTrace();
+        }
+        System.out.println("Que usuario quieres registrarse?");
+        String nombre = sc.nextLine();
+        System.out.println("Cual es el ID del usuario?");
+        String id = sc.nextLine();
+        
+
+    }
+
 
     public static void buscarEmpleado(Statement st) throws SQLException{
         int eleccionEmpleados;
@@ -388,7 +411,7 @@ public class Base {
                     st.getConnection().commit();
                     break;
                 case "8":
-                    buscarUsuario(eleccion,st);
+                    buscarLibroUsuario(eleccion,st);
                     st.getConnection().commit();
                     break;
                 case "9":
@@ -451,6 +474,8 @@ public class Base {
             }
             
         }
+       
+        
     }
 
     public static void buscarAutor(String eleccion,Statement st){
@@ -703,10 +728,10 @@ public class Base {
             prestamo = true;
         }else{
             prestamo = false;
-        
+        }
 
         int contador = 0;
-        System.out.println("Los libros que estan prestados:");
+        System.out.println("Estos son los libros:");
         try{
             ResultSet rs = st.executeQuery("SELECT isbn,titulo,estadoprestamo FROM public.libros WHERE estadoprestamo = " + prestamo + ";" );
             while(rs.next()){
@@ -751,20 +776,55 @@ public class Base {
     }
 
 
-    public static void buscarUsuario(String eleccion,Statement st){
+    public static void buscarLibroUsuario(String eleccion,Statement st){
         System.out.println("Escribe el nombre del usuario que buscas");
-        String usuario = sc.nextLine();
-        int contador = 0 ;
-        System.out.println("Los libros que el usuario alquilo:");
-        for(int i = 0;i < libros.size();i++){
-            if(usuario.equals(libros.get(i).getNomUsuario())){
-                contador++;
-                System.out.println(contador + "-" + libros.get(i).getTitulo());
+        String user = sc.nextLine();
+        int contador = 0;
+        System.out.println("Los libros que han alquilado estos usuarios:");
+        try{
+            ResultSet rs = st.executeQuery("SELECT isbn,titulo,nomusu FROM public.libros WHERE nomusu = '" + user + "';");
+            while(rs.next()){
+                    System.out.println(contador + "- ISBN: " + rs.getString(1) + " Titulo: " + rs.getString(2) + " Usuario: " + rs.getString(9));
+                    contador++;
             }
+            rs.close();
+        }catch (SQLException sqle) {
+            sqle.printStackTrace();
         }
+        System.out.println("No se encontro ninguna coincidencia");//CORREGIR
         System.out.println("Se han encontrado: " + contador + " resultados");
+
+        if(eleccion.equals("3")){
+            System.out.println("Cual es el titulo del libro quieres borrar?");
+            String titulo = sc.nextLine();
+            String sentenciaSql = "DELETE FROM public.libros WHERE titulo = ? ;";
+            try{
+                ResultSet rs = st.executeQuery("SELECT * FROM libros");
+                while(rs.next()){
+                    if(rs.getString(2).equals(titulo)){
+                        System.out.println("Eliminando el libro: \n ISBN: " + rs.getString(1) + " Titulo: " + rs.getString(2));
+                        PreparedStatement ps = st.getConnection().prepareStatement(sentenciaSql);
+                        ps.setString(1, titulo);//parametro del delete
+                        int filasAfectadas = ps.executeUpdate();
+                        if (filasAfectadas > 0) {
+                            System.out.println("Se elimino el libro con éxito.");
+                        } else {
+                            System.out.println("No se pudo eliminar el libro.");
+                        }
+                        ps.close();
+                    }else{
+                        System.out.println("No se encontro el libro");
+                    }
+                }
+                rs.close();
+            }catch (SQLException sqle) {
+                sqle.printStackTrace();
+            }
+            
+        }
     }
     
+
 
 
 }
