@@ -100,7 +100,16 @@ public class Base {
         String nombre = sc.nextLine();
         System.out.println("Cual es el ID del usuario?");
         String id = sc.nextLine();
-        
+        try{
+            ResultSet rs = st.executeQuery("SELECT isbn,titulo,estadoprestamo FROM public.libros WHERE estadoprestamo = false ;" );
+            while(rs.next()){
+                    System.out.println(contador + "- ISBN: " + rs.getString(1) + " Titulo: " + rs.getString(2) + " Estado Prestamo: " + rs.getString(4));
+                    contador++;
+            }
+            rs.close();
+        }catch (SQLException sqle) {
+            sqle.printStackTrace();
+        }
 
     }
 
