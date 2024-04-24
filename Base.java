@@ -10,6 +10,10 @@ import java.util.Scanner;
 import java.io.IOException;
 import java.io.FileReader;
 import java.io.BufferedReader;
+//mejoras:
+// -->Pasar las funciones a otro archivo
+// -->Cerrar y abrir la base correctamente
+// -->Solucionar error "Libro no encontrado"
 
 public class Base {
     public static Scanner sc = new Scanner(System.in);
@@ -85,31 +89,85 @@ public class Base {
 
     private static void alquilarLibro(Statement st) {
         System.out.println("Estos son los libros NO alquilados:");
-        int contador = 1;
+        int contadorEstado = 1;
         try{
             ResultSet rs = st.executeQuery("SELECT isbn,titulo,estadoprestamo FROM public.libros WHERE estadoprestamo = false ;" );
             while(rs.next()){
-                    System.out.println(contador + "- ISBN: " + rs.getString(1) + " Titulo: " + rs.getString(2) + " Estado Prestamo: " + rs.getString(4));
-                    contador++;
+                    System.out.println(contadorEstado + "- ISBN: " + rs.getString(1) + " Titulo: " + rs.getString(2) + " Estado Prestamo: " + rs.getString(4));
+                    contadorEstado++;
             }
             rs.close();
         }catch (SQLException sqle) {
             sqle.printStackTrace();
         }
-        System.out.println("Que usuario quieres registrarse?");
-        String nombre = sc.nextLine();
-        System.out.println("Cual es el ID del usuario?");
-        String id = sc.nextLine();
+        System.out.println("Que libro quiere cambiar?");
+        String nombreLibro = sc.nextLine();
+
+        String id = "";
         try{
-            ResultSet rs = st.executeQuery("SELECT isbn,titulo,estadoprestamo FROM public.libros WHERE estadoprestamo = false ;" );
+            int contador1 = 1;
+            ResultSet rs = st.executeQuery("SELECT nombre FROM public.empleados;" );
             while(rs.next()){
-                    System.out.println(contador + "- ISBN: " + rs.getString(1) + " Titulo: " + rs.getString(2) + " Estado Prestamo: " + rs.getString(4));
-                    contador++;
+                    System.out.println(contador1 + "- Empleado Nombre: " + rs.getString(2));
+                    contador1++;
+            }
+
+            System.out.println("Que empleado quiere registrar?");
+            int eleccionEmpleado = sc.nextInt();
+
+            for(int i = 1;i < eleccionEmpleado;i++){
+                if(i == eleccionEmpleado){
+                    id = rs.getString(1);
+                }
             }
             rs.close();
         }catch (SQLException sqle) {
             sqle.printStackTrace();
         }
+
+        String id2 = "";
+        try{
+            int contador1 = 1;
+            ResultSet rs = st.executeQuery("SELECT nombre FROM public.usuarios;" );
+            while(rs.next()){
+                    System.out.println(contador1 + "- Usuario Nombre: " + rs.getString(2));
+                    contador1++;
+            }
+            
+            System.out.println("Que usuario quiere registrar?");
+            int eleccionUsuario = sc.nextInt();
+
+            for(int i = 1;i < eleccionUsuario;i++){
+                if(i == eleccionUsuario){
+                    id2 = rs.getString(1);
+                }
+            }
+            rs.close();
+        }catch (SQLException sqle) {
+            sqle.printStackTrace();
+        }
+
+        try{
+            ResultSet rs = st.executeQuery("SELECT * FROM empleados");
+            while(rs.next()){
+                String sentenciaSql = "UPDATE public.libros SET nomemple=?, nomusu=? WHERE id=? ";
+                PreparedStatement ps = st.getConnection().prepareStatement(sentenciaSql);
+                ps.setString(1, id) ;
+                ps.setString(2, id2);
+                ps.setString(3, nombreLibro);
+                int filasAfectadas = ps.executeUpdate();
+                if (filasAfectadas > 0) {
+                    System.out.println("Se actualizo con exito");
+                } else {
+                    System.out.println("No se pudo actualizar");
+                }
+                ps.close();
+            }
+            rs.close();
+        }catch (SQLException sqle) {
+            sqle.printStackTrace();
+        }
+
 
     }
 
