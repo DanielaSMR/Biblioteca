@@ -10,10 +10,7 @@ import java.util.Scanner;
 import java.io.IOException;
 import java.io.FileReader;
 import java.io.BufferedReader;
-//mejoras:
-// -->Cerrar y abrir la base correctamente
-// -->Solucionar error "Libro no encontrado"
-// -->Crear funcion Abrir y Cerrar
+
 
 public class Base {
     public static Scanner sc = new Scanner(System.in);
@@ -53,25 +50,25 @@ public class Base {
             eleccion = (int)Integer.parseInt(sc.nextLine());
             switch (eleccion) {
                 case 1:
-                    Libro.nuevoLibro(st);
+                    GestionLibro.nuevoLibro(st);
                     break;
                 case 2:
-                    Libro.buscarLibro("2",st);
+                    GestionLibro.buscarLibro("2",st);
                     break;
                 case 3:
-                    Libro.buscarLibro("3",st);
+                    GestionLibro.buscarLibro("3",st);
                     break;
                 case 4:
-                    Libro.alquilarLibro(st);
+                    GestionLibro.alquilarLibro(st);
                     break;
                 case 5:
-                    Libro.devolucionLibro(st);
+                    GestionLibro.devolucionLibro(st);
                     break; 
                 case 6:
-                    Empleado.buscarEmpleado(st);
+                    GestionEmple.buscarEmpleado(st);
                     break;
                 case 7:
-                    Usuario.buscarUsuario(st);
+                    GestionUsu.buscarUsuario(st);
                     break;
                 case 8:
                     System.out.println("Saliendo...");

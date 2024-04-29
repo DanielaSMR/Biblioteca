@@ -25,11 +25,11 @@ public class main {
         empleados.add(new Empleado("Agustín",""));
 
         usuarios = new ArrayList<>();
-        usuarios.add(new Usuario("usu1"));
-        usuarios.add(new Usuario("usu2"));
-        usuarios.add(new Usuario("usu3"));
-        usuarios.add(new Usuario("usu4"));
-        usuarios.add(new Usuario("usu5"));
+        usuarios.add(new Usuario(1,"usu1"));
+        usuarios.add(new Usuario(2,"usu2"));
+        usuarios.add(new Usuario(3,"usu3"));
+        usuarios.add(new Usuario(4,"usu4"));
+        usuarios.add(new Usuario(5,"usu5"));
 
 
 
