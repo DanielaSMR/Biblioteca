@@ -11,7 +11,7 @@ import java.io.IOException;
 import java.io.FileReader;
 import java.io.BufferedReader;
 
-
+//Meter array list(al menos 2 funciones)
 public class Base {
     public static Scanner sc = new Scanner(System.in);
     public static List<Empleado> empleados;
