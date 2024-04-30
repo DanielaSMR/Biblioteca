@@ -35,21 +35,15 @@ public class GestionEmple{
     }
 
     public static void listarEmpleados(Statement st)throws SQLException{
-        System.out.println("Estos son los empleados");
-        ResultSet rs = st.executeQuery("SELECT * FROM empleados");
-        int n=0;
-        while (rs.next()) {
-            System.out.println("Columna DNI: " + rs.getString(1) + "Columna Nombre: " + rs.getString(2));
-            n++;
+        for(int i = 0;i < Base.empleados.size();i++){
+            System.out.println("[" + i + "] DNI :" + Base.empleados.get(i).getDNI());
+            System.out.println("Nombre :" + Base.empleados.get(i).getNombre());
         }
-        rs.close();
-        
     }
 
     public static void nuevoEmpleado(Statement st) throws Exception{
         
         System.out.println("Como se llama el nuevo empleado?");
-        String nombre2 = IO.pedirTexto();
         String nombre = IO.pedirTexto();
         System.out.println("Cual es el DNI?");
         String DNI = IO.pedirTexto();
@@ -69,6 +63,7 @@ public class GestionEmple{
                 if (filasAfectadas > 0) {
                     System.out.println("Se añadió el empleado con éxito.");
                     st.getConnection().commit();
+                    Sincronizar.añadirEmple(st);
                 } else {
                     System.out.println("No se pudo añadir el empleado.");
                 }
@@ -82,7 +77,6 @@ public class GestionEmple{
 
     public static void eliminarEmpleado(Statement st)throws Exception{
         System.out.println("Cual es el DNI del empleado a borrar");
-        String DNI2 = IO.pedirTexto();
         String DNI = IO.pedirTexto();
         String sentenciaSql = "DELETE FROM public.empleados WHERE dni = ? ;";
         try{

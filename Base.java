@@ -14,9 +14,9 @@ import java.io.BufferedReader;
 //Meter array list(al menos 2 funciones)
 public class Base {
     public static Scanner sc = new Scanner(System.in);
-    public static List<Empleado> empleados;
-    public static List<Usuario> usuarios;
-    public static List<Libro> libros;
+    public static ArrayList<Empleado> empleados;
+    public static ArrayList<Usuario> usuarios;
+    public static ArrayList<Libro> libros;
     
     public static void main(String[] args) throws Exception {
 
@@ -34,7 +34,8 @@ public class Base {
         Statement st = connection.createStatement();
         connection.setAutoCommit(false);
 
-
+        Sincronizar.añadirEmple(st);
+        Sincronizar.añadirUsu(st);
 
         int eleccion;
         do{

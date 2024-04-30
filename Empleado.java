@@ -5,6 +5,7 @@ import java.sql.Statement;
 import java.util.Scanner;
 
 public class Empleado {
+    
     private String nombre;
     private String DNI;
     public static Scanner sc = new Scanner(System.in);
