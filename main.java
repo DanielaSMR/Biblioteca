@@ -387,8 +387,6 @@ public class main {
         System.out.println("Se han encontrado: " + contador + " resultados");
     }
 
-
-    
-
+ 
 
 }

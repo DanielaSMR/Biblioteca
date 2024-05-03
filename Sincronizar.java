@@ -7,9 +7,9 @@ public class Sincronizar{
     public static void añadirEmple(Statement st)throws SQLException{
         ResultSet rs = st.executeQuery("SELECT * FROM empleados");
         while (rs.next()) {
-            Empleado empleados = new Empleado(null,null);
-            empleados.setDNI(rs.getString("DNI"));
-            empleados.setNombre(rs.getString("nombre"));
+            Empleado empleTemp = new Empleado(null,null);
+            empleTemp.setDNI(rs.getString("DNI"));
+            empleTemp.setNombre(rs.getString("nombre"));
         }
         rs.close();
 
@@ -28,7 +28,7 @@ public class Sincronizar{
     }
 
     public static void añadirLibro(Statement st)throws SQLException{
-        ResultSet rs = st.executeQuery("SELECT * FROM Libro");
+        ResultSet rs = st.executeQuery("SELECT * FROM libro");
         while (rs.next()) {
             Usuario usuarios = new Usuario(0,null);
             usuarios.setId(rs.getInt("id"));
