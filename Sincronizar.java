@@ -17,7 +17,7 @@ public class Sincronizar{
 
 
     public static void añadirUsu(Statement st)throws SQLException{
-        ResultSet rs = st.executeQuery("SELECT * FROM usuario");
+        ResultSet rs = st.executeQuery("SELECT * FROM usuarios");
         while (rs.next()) {
             Usuario usuarios = new Usuario(0,null);
             usuarios.setId(rs.getInt("id"));

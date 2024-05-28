@@ -159,7 +159,7 @@ public class GestionLibro{
         int contador = 0;
         System.out.println("Los libros con este autor:");
         try{
-            ResultSet rs = st.executeQuery("SELECT isbn,titulo,autor FROM libros WHERE autor LIKE %" + autor + "%;");
+            ResultSet rs = st.executeQuery("SELECT isbn,titulo,autor FROM libros WHERE autor LIKE '%" + autor + "%';");
             while(rs.next()){
                
                     System.out.println(contador + "- ISBN: " + rs.getString(1) + " Titulo: " + rs.getString(2) + " Autor: " + rs.getString(3));
@@ -211,7 +211,7 @@ public class GestionLibro{
         int contador = 0;
         System.out.println("Los libros con esta editorial:");
         try{
-            ResultSet rs = st.executeQuery("SELECT isbn,titulo,editorial FROM public.libros WHERE editorial LIKE %" + editorial + "%;");
+            ResultSet rs = st.executeQuery("SELECT isbn,titulo,editorial FROM libros WHERE editorial LIKE '%" + editorial + "%';");
             while(rs.next()){
                     System.out.println(contador + "- ISBN: " + rs.getString(1) + " Titulo: " + rs.getString(2) + " Editorial: " + rs.getString(4));
                     contador++;
