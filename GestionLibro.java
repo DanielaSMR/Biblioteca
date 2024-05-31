@@ -125,6 +125,7 @@ public class GestionLibro{
             titulo = IO.pedirTexto();
             String sentenciaSql = "DELETE FROM public.libros WHERE titulo = ? ;";
             try{
+                boolean b = false;
                 ResultSet rs = st.executeQuery("SELECT * FROM libros");
                 while(rs.next()){
                     if(rs.getString(2).equals(titulo)){
@@ -132,16 +133,17 @@ public class GestionLibro{
                         PreparedStatement ps = st.getConnection().prepareStatement(sentenciaSql);
                         ps.setString(1, titulo);//parametro del delete
                         int filasAfectadas = ps.executeUpdate();
+                        b = true;
                         if (filasAfectadas > 0) {
                             System.out.println("Se elimino el libro con éxito.");
                             st.getConnection().commit();
                         } else {
                             System.out.println("No se pudo eliminar el libro.");
                         }
-                        ps.close();
-                    }else{
-                        System.out.println("No se encontro el libro");
-                    }
+                        ps.close();}
+                }
+                if(!b){
+                    System.out.println("No se encontro el libro");
                 }
                 rs.close();
             }catch (SQLException sqle) {
@@ -179,6 +181,7 @@ public class GestionLibro{
             String titulo = IO.pedirTexto();
             String sentenciaSql = "DELETE FROM public.libros WHERE titulo = ? ;";
             try{
+                boolean b = false;
                 ResultSet rs = st.executeQuery("SELECT * FROM libros");
                 while(rs.next()){
                     if(rs.getString(2).equals(titulo)){
@@ -186,16 +189,17 @@ public class GestionLibro{
                         PreparedStatement ps = st.getConnection().prepareStatement(sentenciaSql);
                         ps.setString(1, titulo);//parametro del delete
                         int filasAfectadas = ps.executeUpdate();
+                        b = true;
                         if (filasAfectadas > 0) {
                             System.out.println("Se elimino el libro con éxito.");
                             st.getConnection().commit();
                         } else {
                             System.out.println("No se pudo eliminar el libro.");
                         }
-                        ps.close();
-                    }else{
-                        System.out.println("No se encontro el libro");
-                    }
+                        ps.close();}
+                }
+                if(!b){
+                    System.out.println("No se encontro el libro");
                 }
                 rs.close();
             }catch (SQLException sqle) {
@@ -213,7 +217,7 @@ public class GestionLibro{
         try{
             ResultSet rs = st.executeQuery("SELECT isbn,titulo,editorial FROM libros WHERE editorial LIKE '%" + editorial + "%';");
             while(rs.next()){
-                    System.out.println(contador + "- ISBN: " + rs.getString(1) + " Titulo: " + rs.getString(2) + " Editorial: " + rs.getString(4));
+                    System.out.println(contador + "- ISBN: " + rs.getString(1) + " Titulo: " + rs.getString(2) + " Editorial: " + rs.getString(3));
                     contador++;
             }
             rs.close();
@@ -230,6 +234,7 @@ public class GestionLibro{
             String titulo = IO.pedirTexto();
             String sentenciaSql = "DELETE FROM public.libros WHERE titulo = ? ;";
             try{
+                boolean b = false;
                 ResultSet rs = st.executeQuery("SELECT * FROM libros");
                 while(rs.next()){
                     if(rs.getString(2).equals(titulo)){
@@ -237,16 +242,17 @@ public class GestionLibro{
                         PreparedStatement ps = st.getConnection().prepareStatement(sentenciaSql);
                         ps.setString(1, titulo);//parametro del delete
                         int filasAfectadas = ps.executeUpdate();
+                        b = true;
                         if (filasAfectadas > 0) {
                             System.out.println("Se elimino el libro con éxito.");
                             st.getConnection().commit();
                         } else {
                             System.out.println("No se pudo eliminar el libro.");
                         }
-                        ps.close();
-                    }else{
-                        System.out.println("No se encontro el libro");
-                    }
+                        ps.close();}
+                }
+                if(!b){
+                    System.out.println("No se encontro el libro");
                 }
                 rs.close();
             }catch (SQLException sqle) {
@@ -262,9 +268,9 @@ public class GestionLibro{
         int contador = 0;
         System.out.println("Los libros con esta editorial:");
         try{
-            ResultSet rs = st.executeQuery("SELECT isbn,titulo,ubicacion FROM public.libros WHERE ubicacion = " + ubicacion + ";");
+            ResultSet rs = st.executeQuery("SELECT isbn,titulo,ubicacionlibro FROM public.libros WHERE ubicacionlibro = " + ubicacion + ";");
             while(rs.next()){
-                    System.out.println(contador + "- ISBN: " + rs.getString(1) + " Titulo: " + rs.getString(2) + " Ubicacion: " + rs.getString(6));
+                    System.out.println(contador + "- ISBN: " + rs.getString(1) + " Titulo: " + rs.getString(2) + " Ubicacion: " + rs.getString(3));
                     contador++;
             }
             rs.close();
@@ -281,6 +287,7 @@ public class GestionLibro{
             String titulo = IO.pedirTexto();
             String sentenciaSql = "DELETE FROM public.libros WHERE titulo = ? ;";
             try{
+                boolean b = false;
                 ResultSet rs = st.executeQuery("SELECT * FROM libros");
                 while(rs.next()){
                     if(rs.getString(2).equals(titulo)){
@@ -288,16 +295,17 @@ public class GestionLibro{
                         PreparedStatement ps = st.getConnection().prepareStatement(sentenciaSql);
                         ps.setString(1, titulo);//parametro del delete
                         int filasAfectadas = ps.executeUpdate();
+                        b = true;
                         if (filasAfectadas > 0) {
                             System.out.println("Se elimino el libro con éxito.");
                             st.getConnection().commit();
                         } else {
                             System.out.println("No se pudo eliminar el libro.");
                         }
-                        ps.close();
-                    }else{
-                        System.out.println("No se encontro el libro");
-                    }
+                        ps.close();}
+                }
+                if(!b){
+                    System.out.println("No se encontro el libro");
                 }
                 rs.close();
             }catch (SQLException sqle) {
@@ -332,6 +340,7 @@ public class GestionLibro{
             String titulo = IO.pedirTexto();
             String sentenciaSql = "DELETE FROM public.libros WHERE titulo = ? ;";
             try{
+                boolean b = false;
                 ResultSet rs = st.executeQuery("SELECT * FROM libros");
                 while(rs.next()){
                     if(rs.getString(2).equals(titulo)){
@@ -339,16 +348,17 @@ public class GestionLibro{
                         PreparedStatement ps = st.getConnection().prepareStatement(sentenciaSql);
                         ps.setString(1, titulo);//parametro del delete
                         int filasAfectadas = ps.executeUpdate();
+                        b = true;
                         if (filasAfectadas > 0) {
                             System.out.println("Se elimino el libro con éxito.");
                             st.getConnection().commit();
                         } else {
                             System.out.println("No se pudo eliminar el libro.");
                         }
-                        ps.close();
-                    }else{
-                        System.out.println("No se encontro el libro");
-                    }
+                        ps.close();}
+                }
+                if(!b){
+                    System.out.println("No se encontro el libro");
                 }
                 rs.close();
             }catch (SQLException sqle) {
@@ -366,7 +376,7 @@ public class GestionLibro{
         try{
             ResultSet rs = st.executeQuery("SELECT isbn,titulo,nomemple FROM public.libros WHERE nomemple = '" + emple + "';");
             while(rs.next()){
-                    System.out.println(contador + "- ISBN: " + rs.getString(1) + " Titulo: " + rs.getString(2) + " Empleado: " + rs.getString(8));
+                    System.out.println(contador + "- ISBN: " + rs.getString(1) + " Titulo: " + rs.getString(2) + " Empleado: " + rs.getString(3));
                     contador++;
             }
             rs.close();
@@ -383,6 +393,7 @@ public class GestionLibro{
             String titulo = IO.pedirTexto();
             String sentenciaSql = "DELETE FROM public.libros WHERE titulo = ? ;";
             try{
+                boolean b = false;
                 ResultSet rs = st.executeQuery("SELECT * FROM libros");
                 while(rs.next()){
                     if(rs.getString(2).equals(titulo)){
@@ -390,16 +401,17 @@ public class GestionLibro{
                         PreparedStatement ps = st.getConnection().prepareStatement(sentenciaSql);
                         ps.setString(1, titulo);//parametro del delete
                         int filasAfectadas = ps.executeUpdate();
+                        b = true;
                         if (filasAfectadas > 0) {
                             System.out.println("Se elimino el libro con éxito.");
                             st.getConnection().commit();
                         } else {
                             System.out.println("No se pudo eliminar el libro.");
                         }
-                        ps.close();
-                    }else{
-                        System.out.println("No se encontro el libro");
-                    }
+                        ps.close();}
+                }
+                if(!b){
+                    System.out.println("No se encontro el libro");
                 }
                 rs.close();
             }catch (SQLException sqle) {
@@ -424,7 +436,7 @@ public class GestionLibro{
         try{
             ResultSet rs = st.executeQuery("SELECT isbn,titulo,estadoprestamo FROM public.libros WHERE estadoprestamo = " + prestamo + ";" );
             while(rs.next()){
-                    System.out.println(contador + "- ISBN: " + rs.getString(1) + " Titulo: " + rs.getString(2) + " Estado Prestamo: " + rs.getString(4));
+                    System.out.println(contador + "- ISBN: " + rs.getString(1) + " Titulo: " + rs.getString(2) + " Estado Prestamo: " + rs.getString(3));
                     contador++;
             }
             rs.close();
@@ -441,6 +453,7 @@ public class GestionLibro{
             String titulo = IO.pedirTexto();
             String sentenciaSql = "DELETE FROM public.libros WHERE titulo = ? ;";
             try{
+                boolean b = false;
                 ResultSet rs = st.executeQuery("SELECT * FROM libros");
                 while(rs.next()){
                     if(rs.getString(2).equals(titulo)){
@@ -448,16 +461,17 @@ public class GestionLibro{
                         PreparedStatement ps = st.getConnection().prepareStatement(sentenciaSql);
                         ps.setString(1, titulo);//parametro del delete
                         int filasAfectadas = ps.executeUpdate();
+                        b = true;
                         if (filasAfectadas > 0) {
                             System.out.println("Se elimino el libro con éxito.");
                             st.getConnection().commit();
                         } else {
                             System.out.println("No se pudo eliminar el libro.");
                         }
-                        ps.close();
-                    }else{
-                        System.out.println("No se encontro el libro");
-                    }
+                        ps.close();}
+                }
+                if(!b){
+                    System.out.println("No se encontro el libro");
                 }
                 rs.close();
             }catch (SQLException sqle) {
@@ -475,7 +489,7 @@ public class GestionLibro{
         try{
             ResultSet rs = st.executeQuery("SELECT isbn,titulo,nomusu FROM public.libros WHERE nomusu = '" + user + "';");
             while(rs.next()){
-                    System.out.println(contador + "- ISBN: " + rs.getString(1) + " Titulo: " + rs.getString(2) + " Usuario: " + rs.getString(9));
+                    System.out.println(contador + "- ISBN: " + rs.getString(1) + " Titulo: " + rs.getString(2) + " Usuario: " + rs.getString(3));
                     contador++;
             }
             rs.close();
@@ -492,6 +506,7 @@ public class GestionLibro{
             String titulo = IO.pedirTexto();
             String sentenciaSql = "DELETE FROM public.libros WHERE titulo = ? ;";
             try{
+                boolean b = false;
                 ResultSet rs = st.executeQuery("SELECT * FROM libros");
                 while(rs.next()){
                     if(rs.getString(2).equals(titulo)){
@@ -499,16 +514,17 @@ public class GestionLibro{
                         PreparedStatement ps = st.getConnection().prepareStatement(sentenciaSql);
                         ps.setString(1, titulo);//parametro del delete
                         int filasAfectadas = ps.executeUpdate();
+                        b = true;
                         if (filasAfectadas > 0) {
                             System.out.println("Se elimino el libro con éxito.");
                             st.getConnection().commit();
                         } else {
                             System.out.println("No se pudo eliminar el libro.");
                         }
-                        ps.close();
-                    }else{
-                        System.out.println("No se encontro el libro");
-                    }
+                        ps.close();}
+                }
+                if(!b){
+                    System.out.println("No se encontro el libro");
                 }
                 rs.close();
             }catch (SQLException sqle) {
@@ -524,7 +540,7 @@ public class GestionLibro{
         try{
             ResultSet rs = st.executeQuery("SELECT isbn,titulo,estadoprestamo FROM public.libros WHERE estadoprestamo = false ;" );
             while(rs.next()){
-                    System.out.println(contadorEstado + "- ISBN: " + rs.getString(1) + " Titulo: " + rs.getString(2) + " Estado Prestamo: " + rs.getString(4));
+                    System.out.println(contadorEstado + "- ISBN: " + rs.getString(1) + " Titulo: " + rs.getString(2) + " Estado Prestamo: " + rs.getString(3));
                     contadorEstado++;
             }
             rs.close();
@@ -539,17 +555,17 @@ public class GestionLibro{
             int contador1 = 1;
             ResultSet rs = st.executeQuery("SELECT nombre FROM public.empleados;" );
             while(rs.next()){
-                    System.out.println(contador1 + "- Empleado Nombre: " + rs.getString(2));
+                    System.out.println(contador1 + "- Empleado Nombre: " + rs.getString(1));
                     contador1++;
             }
 
             System.out.println("Que empleado quiere registrar?");
             int eleccionEmpleado = IO.pedirEntero();
-
-            for(int i = 1;i < eleccionEmpleado;i++){
-                if(i == eleccionEmpleado){
+            int cont = 0;
+            while(rs.next() && cont != eleccionEmpleado + 1){
                     id = rs.getString(1);
-                }
+                    System.out.println(id);
+                    cont++;
             }
             rs.close();
         }catch (SQLException sqle) {
@@ -561,16 +577,17 @@ public class GestionLibro{
             int contador1 = 1;
             ResultSet rs = st.executeQuery("SELECT nombre FROM public.usuarios;" );
             while(rs.next()){
-                    System.out.println(contador1 + "- Usuario Nombre: " + rs.getString(2));
+                    System.out.println(contador1 + "- Usuario Nombre: " + rs.getString(1));
                     contador1++;
             }
             
             System.out.println("Que usuario quiere registrar?");
             int eleccionUsuario = IO.pedirEntero();
 
-            for(int i = 1;i < eleccionUsuario;i++){
+            for(int i = 1;i <= eleccionUsuario;i++){
                 if(i == eleccionUsuario){
                     id2 = rs.getString(1);
+                    System.out.println(id);
                 }
             }
             rs.close();
@@ -579,16 +596,17 @@ public class GestionLibro{
         }
 
         try{
+
             ResultSet rs = st.executeQuery("SELECT * FROM empleados");
-            while(rs.next()){
-                String sentenciaSql = "UPDATE public.libros SET nomemple=?, nomusu=? WHERE id=? ";
+            while(rs.next()){                
+                String sentenciaSql = "UPDATE public.libros SET estadoprestamo=?, nomemple=?, nomusu=? WHERE titulo=? ";
                 PreparedStatement ps = st.getConnection().prepareStatement(sentenciaSql);
-                ps.setString(1, id) ;
-                ps.setString(2, id2);
-                ps.setString(3, nombreLibro);
+                ps.setBoolean(1,true);
+                ps.setString(2, id) ;
+                ps.setString(3, id2);
+                ps.setString(4, nombreLibro);
                 int filasAfectadas = ps.executeUpdate();
                 if (filasAfectadas > 0) {
-                    System.out.println("Se actualizo con exito");
                     st.getConnection().commit();
                 } else {
                     System.out.println("No se pudo actualizar");
@@ -599,6 +617,8 @@ public class GestionLibro{
         }catch (SQLException sqle) {
             sqle.printStackTrace();
         }
+
+        
 
 
     }
