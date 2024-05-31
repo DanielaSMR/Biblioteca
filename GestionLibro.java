@@ -554,18 +554,20 @@ public class GestionLibro{
         try{
             int contador1 = 1;
             ResultSet rs = st.executeQuery("SELECT nombre FROM public.empleados;" );
+            
             while(rs.next()){
                     System.out.println(contador1 + "- Empleado Nombre: " + rs.getString(1));
                     contador1++;
             }
 
+            rs = st.executeQuery("SELECT nombre FROM public.empleados;" );
+
             System.out.println("Que empleado quiere registrar?");
             int eleccionEmpleado = IO.pedirEntero();
             int cont = 0;
-            while(rs.next() && cont != eleccionEmpleado + 1){
-                    id = rs.getString(1);
-                    System.out.println(id);
-                    cont++;
+            while(rs.next() && cont != eleccionEmpleado){
+                id = rs.getString(1);
+                cont++;
             }
             rs.close();
         }catch (SQLException sqle) {
@@ -580,15 +582,15 @@ public class GestionLibro{
                     System.out.println(contador1 + "- Usuario Nombre: " + rs.getString(1));
                     contador1++;
             }
-            
+
+            rs = st.executeQuery("SELECT nombre FROM public.usuarios;" );
+
             System.out.println("Que usuario quiere registrar?");
             int eleccionUsuario = IO.pedirEntero();
-
-            for(int i = 1;i <= eleccionUsuario;i++){
-                if(i == eleccionUsuario){
-                    id2 = rs.getString(1);
-                    System.out.println(id);
-                }
+            int cont = 0;
+            while(rs.next() && cont != eleccionUsuario){
+                id2 = rs.getString(1);
+                cont++;
             }
             rs.close();
         }catch (SQLException sqle) {
@@ -629,7 +631,7 @@ public class GestionLibro{
         try{
             ResultSet rs = st.executeQuery("SELECT isbn,titulo,estadoprestamo FROM public.libros WHERE estadoprestamo = true ;" );
             while(rs.next()){
-                    System.out.println(contadorEstado + "- ISBN: " + rs.getString(1) + " Titulo: " + rs.getString(2) + " Estado Prestamo: " + rs.getBoolean(4));
+                    System.out.println(contadorEstado + "- ISBN: " + rs.getString(1) + " Titulo: " + rs.getString(2) + " Estado Prestamo: " + rs.getBoolean(3));
                     contadorEstado++;
             }
             rs.close();
@@ -640,10 +642,9 @@ public class GestionLibro{
         String nombreLibro = IO.pedirTexto();
 
         try{
-            ResultSet rs = st.executeQuery("SELECT isbn,titulo,estadoprestamo FROM public.libros WHERE titulo = " + nombreLibro + ";");
+            ResultSet rs = st.executeQuery("SELECT titulo FROM public.libros WHERE titulo = '% " + nombreLibro + " %';");
             while(rs.next()){
-                if(rs.getBoolean(4)){
-                    String sentenciaSql = "UPDATE public.libros SET estadoprestamo = false WHERE titulo = ?";
+                    String sentenciaSql = "UPDATE public.libros SET estadoprestamo = false, nomemple = null, nomusu = null WHERE titulo = '%?%';";
                     PreparedStatement ps = st.getConnection().prepareStatement(sentenciaSql);
                     ps.setString(1, nombreLibro);
                     int filasAfectadas = ps.executeUpdate();
@@ -654,9 +655,6 @@ public class GestionLibro{
                         System.out.println("No se pudo actualizar");
                     }
                     ps.close();
-                }else{
-                    System.out.println("El libro que buscas no esta alquilado");
-                }
                 rs.close();
             }
         }catch (SQLException sqle) {
