@@ -1,7 +1,9 @@
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 public class Sincronizar{
+    static ArrayList<Usuario> usus = new ArrayList<Usuario>();
 
 
     public static void añadirEmple(Statement st)throws SQLException{
@@ -22,8 +24,15 @@ public class Sincronizar{
             Usuario usuarios = new Usuario(0,null);
             usuarios.setId(rs.getInt("id"));
             usuarios.setNombre(rs.getString("nombre"));
+
+            try{
+                usus.add(usuarios);
+            }catch(Exception ex){
+                ex.getMessage();
+            }
         }
         rs.close();
+
 
     }
 

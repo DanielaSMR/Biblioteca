@@ -48,28 +48,22 @@ public class GestionUsu{
     public static void nuevoUsuario(Statement st) throws Exception{
         System.out.println("Como se llama el nuevo usuario?");
         String nombre = IO.pedirTexto();
-        System.out.println("Cual es el ID?");
-        int id = IO.pedirEntero();
+        // System.out.println("Cual es el ID?");
+        // int id = IO.pedirEntero();
         
         try {
-            ResultSet rs = st.executeQuery("SELECT id FROM usuarios WHERE id = '" + id + "'");
-            if (rs.next()) {
-                System.out.println("El empleado ya existe en la base de datos.");
-            }else {
-                String sentenciaSql = "INSERT INTO public.usuarios (id, nombre) VALUES (?, ?)";
-                PreparedStatement ps = st.getConnection().prepareStatement(sentenciaSql);
-                ps.setInt(1, id);//parametro 1 del Insert
-                ps.setString(2, nombre);//paranetro 2 del Insert
+                String sentenciaSql = "INSERT INTO public.usuarios (nombre) VALUES (?)";
+                PreparedStatement ps = st.getConnection().prepareStatement(sentenciaSql,  Statement.RETURN_GENERATED_KEYS);
+                ps.setString(1, nombre);//paranetro 2 del Insert
                 int filasAfectadas = ps.executeUpdate();
                 if (filasAfectadas > 0) {
                     System.out.println("Se añadió el usuarios con éxito.");
                     st.getConnection().commit();
+                    Sincronizar.añadirUsu(st);
                 } else {
                     System.out.println("No se pudo añadir el usuario.");
                 }
                 ps.close();
-            }
-            rs.close();
           } catch (SQLException sqle) {
             sqle.printStackTrace();
           }
